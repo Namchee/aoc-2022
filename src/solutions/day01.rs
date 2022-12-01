@@ -19,7 +19,7 @@ pub fn solve_two(input: Vec<String>) -> String {
     chunks.sort();
     chunks.reverse();
 
-    return format!("{}", chunks[0] + chunks[1] + chunks[2]);
+    return format!("{}", chunks.iter().take(3).sum::<u32>());
 }
 
 fn split_to_chunks(input: Vec<String>) -> Vec<Vec<u32> > {
