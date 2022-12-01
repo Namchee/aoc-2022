@@ -1,50 +1,61 @@
 use std::cmp;
 
 pub fn solve_one(input: Vec<String>) -> String {
-    let mut cur: u32 = 0;
+    let chunks = split_to_chunks(input);
     let mut best: u32 = 0;
 
-    for value in input.iter() {
-        if value.len() == 0 {
-            best = cmp::max(cur, best);
-            cur = 0;
-            continue;
-        }
-        let val = value.parse::<u32>().unwrap();
-        cur += val;
+    for chunk in chunks.iter() {
+        best = cmp::max(chunk.iter().sum(), best);
     }
-
-    best = cmp::max(cur, best);
 
     return format!("{}", best);
 }
 
 pub fn solve_two(input: Vec<String>) -> String {
-    let mut cur: u32 = 0;
-    
-    let mut sum: Vec<u32> = vec![];
+    let mut chunks: Vec<u32> = split_to_chunks(input)
+        .iter()
+        .map(|x| x.iter().sum())
+        .collect();
+    chunks.sort();
+    chunks.reverse();
 
-    for value in input.iter() {
-        if value.len() == 0 {
-            sum.push(cur);
-            cur = 0;
+    return format!("{}", chunks[0] + chunks[1] + chunks[2]);
+}
+
+fn split_to_chunks(input: Vec<String>) -> Vec<Vec<u32> > {
+    let mut result: Vec<Vec<u32> > = vec![];
+    let mut temp: Vec<u32>= vec![];
+
+    for val in input {
+        if val.is_empty() {
+            result.push(temp.clone());
+            temp.clear();
             continue;
         }
-        let val = value.parse::<u32>().unwrap();
-        cur += val;
+
+        temp.push(val.parse::<u32>().unwrap());
     }
 
-    sum.push(cur);
-    sum.sort();
-
-    let result = sum[sum.len() - 1] + sum[sum.len() - 2] + sum[sum.len() - 3];
-
-    return format!("{}", result);
+    result.push(temp);
+    result
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_split_to_chunks() {
+        let str = "1000
+2000
+3000
+
+4000";
+
+        let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
+
+        assert_eq!(split_to_chunks(input), vec![vec![1000, 2000, 3000], vec![4000]]);
+    }
 
     #[test]
     fn test_solve_one() {
