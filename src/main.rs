@@ -24,17 +24,15 @@ macro_rules! solve{
 fn main() {
     let args: Vec<String> = env::args().collect();
     let day = args[1].parse::<u8>().unwrap();
-    let input_file = utils::read_input(day);
+    let input = utils::read_input(day);
 
-    if input_file.is_err() {
-        println!("❌ {}", input_file.unwrap_err());
+    if input.is_err() {
+        println!("❌ {}", input.unwrap_err());
         process::exit(0);
     }
 
-    let input = input_file.unwrap();
-
     match day {
-        1 => solve!(solutions::day01, input.clone()),
+        1 => solve!(solutions::day01, input.as_ref().unwrap().clone()),
         _ => println!("Not solved yet..."),
     }
 }
