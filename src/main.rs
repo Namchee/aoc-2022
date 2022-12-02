@@ -33,6 +33,7 @@ fn main() {
 
     match day {
         1 => solve!(solutions::day01, input.as_ref().unwrap().clone()),
+        2 => solve!(solutions::day02, input.as_ref().unwrap().clone()),
         _ => println!("Not solved yet..."),
     }
 }
