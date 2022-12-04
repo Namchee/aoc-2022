@@ -97,6 +97,7 @@ mod tests {
 10000";
 
         let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
+        
         assert_eq!(solve_two(input), "45000".to_string())
     }
 }

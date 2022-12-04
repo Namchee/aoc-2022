@@ -12,11 +12,19 @@ mod tests {
 
     #[test]
     fn test_solve_one() {
-        assert!(true);
+        let str = "";
+    
+        let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
+
+        assert_eq!(solve_one(input), "");
     }
 
     #[test]
     fn test_solve_two() {
-        assert!(true);
+        let str = "";
+    
+        let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
+
+        assert_eq!(solve_two(input), "");
     }
 }
