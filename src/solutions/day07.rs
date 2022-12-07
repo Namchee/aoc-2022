@@ -17,13 +17,13 @@ impl Folder {
 }
 
 pub fn solve_one(input: Vec<String>) -> String {
-    let root: Folder = Folder {
+    let mut root: Folder = Folder{
         name: "/".to_string(),
         parent: None,
         children: vec![],
         size: 0
     };
-    let mut cwd: Folder = root;
+    let mut cwd: &mut Folder = &mut root;
 
     let mut read_flag = false;
 
@@ -39,7 +39,7 @@ pub fn solve_one(input: Vec<String>) -> String {
                     if tokens[0] == "dir" {
                         cwd.children.push(Folder{
                             name: tokens[1].clone(),
-                            parent: Option::from(Box::from(cwd)),
+                            parent: Option::from(Box::new(*cwd)),
                             children: vec![],
                             size: 0,
                         });
@@ -57,9 +57,10 @@ pub fn solve_one(input: Vec<String>) -> String {
             }
 
             if tokens[2] == ".." {
-                cwd = *cwd.parent.unwrap();
+                cwd = &mut cwd.parent.unwrap();
             } else {
-                cwd = *cwd.children.iter().find(|x| x.name == tokens[2]).unwrap();
+                cwd = &mut cwd.children.iter()
+                    .find(|x| x.name == tokens[2]).unwrap();
             }
         }
     }
