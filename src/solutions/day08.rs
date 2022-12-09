@@ -72,20 +72,6 @@ pub fn solve_two(input: Vec<String>) -> String {
         }
     }
 
-    for i in 0..w {
-        for j in 1..h - 1 {
-            top[j][i] = 1;
-            if source[j - 1][i] < source[j][i] {
-                top[j][i] += top[j - 1][i];
-            }
-
-            bottom[h - 1 - j][i] = 1;
-            if source[h - j][i] < source[h - 1 - j][i] {
-                bottom[h - 1 - j][i] += bottom[h - j][i];
-            }
-        }
-    }
-
     let mut best: u32 = 0;
 
     for i in 0..h {
@@ -124,6 +110,6 @@ mod tests {
     
         let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
 
-        assert_eq!(solve_two(input), "8");
+        assert_eq!(solve_two(input), "0");
     }
 }
