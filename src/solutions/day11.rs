@@ -1,45 +1,76 @@
 use regex::Regex;
-use std::collections::HashMap;
-use math::round;
 
 struct Operation {
-    a: String,
     op: String,
     b: String,
 }
 
 struct Monkey {
     count: usize,
-    items: Vec<u32>,
+    items: Vec<u64>,
     op: Operation,
-    test: u32,
+    test: u64,
     if_true: usize,
     if_false: usize,
 }
 
 pub fn solve_one(input: Vec<String>) -> String {
     let mut monkeys = parse_monkey(split_input(input));
-    let mut item: HashMap<u32, usize> = HashMap::new();
     for _ in 0..20 {
         for idx in 0..monkeys.len() {
             monkeys[idx].count += monkeys[idx].items.len();
-            for item in monkeys[idx].items.iter() {
-                let val = calculate_worry(*item, &monkeys[idx].op);
+            for i in 0..monkeys[idx].items.len() {
+                let worry = calculate_worry(monkeys[idx].items[i], &monkeys[idx].op);
+                let val = worry / 3;
+
+                let mut dest = monkeys[idx].if_true;
+                if val % monkeys[idx].test != 0 {
+                    dest = monkeys[idx].if_false;
+                }
+
+                monkeys[dest].items.push(val);
             }
+
+            monkeys[idx].items.clear();
         }
     }
 
-    format!("{}", 0)
+    monkeys.sort_by_key(|m| m.count);
+    monkeys.reverse();
+
+    format!("{}", monkeys[0].count * monkeys[1].count)
 }
 
 pub fn solve_two(input: Vec<String>) -> String {
-    let monkeys = parse_monkey(split_input(input));
+    let mut monkeys = parse_monkey(split_input(input));
+    for _ in 0..10000 {
+        for idx in 0..monkeys.len() {
+            monkeys[idx].count += monkeys[idx].items.len();
+            for i in 0..monkeys[idx].items.len() {
+                let worry = calculate_worry(monkeys[idx].items[i].clone(), &monkeys[idx].op);
+                let val = worry % 1000000;
 
-    format!("{}", 0)
+                let mut dest = monkeys[idx].if_true;
+                if val % monkeys[idx].test != 0 {
+                    dest = monkeys[idx].if_false;
+                }
+
+                monkeys[dest].items.push(val);
+            }
+
+            monkeys[idx].items.clear();
+        }
+    }
+
+    monkeys.sort_by_key(|m| m.count);
+    monkeys.reverse();
+
+    format!("{}", monkeys[0].count * monkeys[1].count)
 }
 
-fn calculate_worry(val: u32, op: &Operation) -> u32 {
-    let b = op.b.parse::<u32>().unwrap_or(val);
+fn calculate_worry(val: u64, op: &Operation) -> u64 {
+    let b = op.b.parse::<u64>().unwrap_or(val);
+
     // judging from the input, the worry value always increases
     if op.op == "+" {
         return val + b;
@@ -78,19 +109,18 @@ fn parse_monkey(input: Vec<Vec<String> >) -> Vec<Monkey> {
     let op = Regex::new(r"Operation: new = (\w+) ([\+\-*/]) (\w+)").unwrap();
 
     for data in input.iter() {
-        let items: Vec<u32> = digit.find_iter(&data[1])
-            .map(|x| x.as_str().parse::<u32>().unwrap())
+        let items: Vec<u64> = digit.find_iter(&data[1])
+            .map(|x| x.as_str().parse::<u64>().unwrap())
             .collect::<Vec<_> >();
         
         let ops = op.captures(&data[2]).unwrap();
         let operation = Operation{
-            a: ops.get(1).unwrap().as_str().to_string(),
             op: ops.get(2).unwrap().as_str().to_string(),
             b: ops.get(3).unwrap().as_str().to_string(),
         };
 
         let test = digit.captures(&data[3]).unwrap().get(0)
-            .unwrap().as_str().parse::<u32>().unwrap();
+            .unwrap().as_str().parse::<u64>().unwrap();
         let if_true = digit.captures(&data[4]).unwrap().get(0)
             .unwrap().as_str().parse::<usize>().unwrap();
         let if_false = digit.captures(&data[5]).unwrap().get(0)
@@ -116,30 +146,70 @@ mod tests {
     #[test]
     fn test_solve_one() {
         let str = "Monkey 0:
-  Starting items: 98, 70, 75, 80, 84, 89, 55, 98
-  Operation: new = old * 2
-  Test: divisible by 11
-    If true: throw to monkey 1
-    If false: throw to monkey 4
+  Starting items: 79, 98
+  Operation: new = old * 19
+  Test: divisible by 23
+    If true: throw to monkey 2
+    If false: throw to monkey 3
       
 Monkey 1:
-  Starting items: 59
-  Operation: new = old * old
+  Starting items: 54, 65, 75, 74
+  Operation: new = old + 6
   Test: divisible by 19
-    If true: throw to monkey 7
-    If false: throw to monkey 3";
+    If true: throw to monkey 2
+    If false: throw to monkey 0
+      
+Monkey 2:
+  Starting items: 79, 60, 97
+  Operation: new = old * old
+  Test: divisible by 13
+    If true: throw to monkey 1
+    If false: throw to monkey 3
+      
+Monkey 3:
+  Starting items: 74
+  Operation: new = old + 3
+  Test: divisible by 17
+    If true: throw to monkey 0
+    If false: throw to monkey 1";
     
         let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
 
-        assert_eq!(solve_one(input), "1");
+        assert_eq!(solve_one(input), "10605");
     }
 
     #[test]
     fn test_solve_two() {
-        let str = "";
+        let str = "Monkey 0:
+  Starting items: 79, 98
+  Operation: new = old * 19
+  Test: divisible by 23
+    If true: throw to monkey 2
+    If false: throw to monkey 3
+      
+Monkey 1:
+  Starting items: 54, 65, 75, 74
+  Operation: new = old + 6
+  Test: divisible by 19
+    If true: throw to monkey 2
+    If false: throw to monkey 0
+      
+Monkey 2:
+  Starting items: 79, 60, 97
+  Operation: new = old * old
+  Test: divisible by 13
+    If true: throw to monkey 1
+    If false: throw to monkey 3
+      
+Monkey 3:
+  Starting items: 74
+  Operation: new = old + 3
+  Test: divisible by 17
+    If true: throw to monkey 0
+    If false: throw to monkey 1";
     
         let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
 
-        assert_eq!(solve_two(input), "");
+        assert_eq!(solve_two(input), "2713310158");
     }
 }
