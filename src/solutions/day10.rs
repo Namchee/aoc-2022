@@ -45,7 +45,7 @@ pub fn solve_one(input: Vec<String>) -> String {
     format!("{}", result)
 }
 
-pub fn solve_two(input: Vec<String>) -> String {
+pub fn solve_two(_: Vec<String>) -> String {
     "".to_string()
 }
 

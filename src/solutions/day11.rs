@@ -43,12 +43,16 @@ pub fn solve_one(input: Vec<String>) -> String {
 
 pub fn solve_two(input: Vec<String>) -> String {
     let mut monkeys = parse_monkey(split_input(input));
+
+    // to keep the divisibilty intact, mod with all the divisor
+    let normalizer: u64 = monkeys.iter().map(|m| m.test).product();
+
     for _ in 0..10000 {
         for idx in 0..monkeys.len() {
             monkeys[idx].count += monkeys[idx].items.len();
             for i in 0..monkeys[idx].items.len() {
                 let worry = calculate_worry(monkeys[idx].items[i].clone(), &monkeys[idx].op);
-                let val = worry % 1000000;
+                let val = worry % normalizer;
 
                 let mut dest = monkeys[idx].if_true;
                 if val % monkeys[idx].test != 0 {

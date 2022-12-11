@@ -55,8 +55,8 @@ pub fn solve_two(input: Vec<String>) -> String {
 
     let mut left: Vec<Vec<u32> > = vec![vec![0; w]; h];
     let mut right: Vec<Vec<u32> > = vec![vec![0; w]; h];
-    let mut top: Vec<Vec<u32> > = vec![vec![0; w]; h];
-    let mut bottom: Vec<Vec<u32> > = vec![vec![0; w]; h];
+    let top: Vec<Vec<u32> > = vec![vec![0; w]; h];
+    let bottom: Vec<Vec<u32> > = vec![vec![0; w]; h];
 
     for i in 0..h {
         for j in 1..w - 1 {
