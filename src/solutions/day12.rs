@@ -10,6 +10,26 @@ struct Memo {
 
 pub fn solve_one(input: Vec<String>) -> String {
     let (grid, start, end) = to_grid(input);
+    let best = bfs(grid, start, end);
+
+    format!("{}", best)
+}
+
+// needs some refactor
+pub fn solve_two(input: Vec<String>) -> String {
+    let (grid, start, end) = to_grid_two(input);
+
+    let mut best = grid.len() * grid[0].len();
+    for pos in start.iter() {
+        let curr = bfs(grid.clone(), *pos, end);
+
+        best = min(best, curr);
+    }
+
+    format!("{}", best)
+}
+
+fn bfs(grid: Vec<Vec<char> >, start: Position, end: Position) -> usize {
     let direction: Vec<(i32, i32)> = vec![
         (0, 1),
         (0, -1),
@@ -43,7 +63,9 @@ pub fn solve_one(input: Vec<String>) -> String {
 
             let bound = x >= 0 && (x as usize) < grid.len() && y >= 0 && (y as usize) < grid[0].len();
 
-            if bound && can_move(grid[position.pos.0][position.pos.1], grid[x as usize][y as usize]) {
+            if bound && 
+                !visited[x as usize][y as usize] &&
+                can_move(grid[position.pos.0][position.pos.1], grid[x as usize][y as usize]) {
                 queue.push_back(Memo{
                     pos: (x as usize, y as usize),
                     walk: position.walk + 1,
@@ -52,12 +74,7 @@ pub fn solve_one(input: Vec<String>) -> String {
         }
     }
 
-    format!("{}", best)
-}
-
-// needs some refactor
-pub fn solve_two(_: Vec<String>) -> String {
-    "".to_string()
+    best
 }
 
 fn can_move(a: char, b: char) -> bool {
@@ -80,7 +97,37 @@ fn to_grid(input: Vec<String>) -> (Vec<Vec<char> >, Position, Position) {
             let mut ch = c;
             if c == 'S' {
                 start = (i, j);
-                ch = '~'; // don't move here
+                ch = 'a'; // `S` has the same elevation with `a`
+            }
+            
+            if c == 'E' {
+                end = (i, j);
+                ch = '{';
+            }
+
+            current.push(ch);
+        }
+
+        grid.push(current);
+    }
+
+    (grid, start, end)
+}
+
+fn to_grid_two(input: Vec<String>) -> (Vec<Vec<char> >, Vec<Position>, Position) {
+    let mut start: Vec<Position> = vec![];
+    let mut end: Position = (0, 0);
+
+    let mut grid: Vec<Vec<char> > = vec![];
+
+    for (i, line) in input.iter().enumerate() {
+        let mut current = vec![];
+
+        for (j, c) in line.chars().enumerate() {
+            let mut ch = c;
+            if c == 'S' || c == 'a' {
+                start.push((i, j));
+                ch = 'a'; // don't move here
             }
             
             if c == 'E' {
@@ -116,10 +163,14 @@ abdefghi";
 
     #[test]
     fn test_solve_two() {
-        let str = "";
+        let str = "Sabqponm
+abcryxxl
+accszExk
+acctuvwj
+abdefghi";
     
         let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
 
-        assert_eq!(solve_two(input), "");
+        assert_eq!(solve_two(input), "29");
     }
 }
