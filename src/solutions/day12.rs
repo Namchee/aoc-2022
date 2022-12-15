@@ -15,7 +15,8 @@ pub fn solve_one(input: Vec<String>) -> String {
     format!("{}", best)
 }
 
-// needs some refactor
+// needs some optimization
+// still quite fast, but can be optimized
 pub fn solve_two(input: Vec<String>) -> String {
     let (grid, start, end) = to_grid_two(input);
 
