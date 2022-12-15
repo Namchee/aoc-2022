@@ -45,8 +45,42 @@ pub fn solve_one(input: Vec<String>) -> String {
     format!("{}", result)
 }
 
-pub fn solve_two(_: Vec<String>) -> String {
-    "".to_string()
+pub fn solve_two(input: Vec<String>) -> String {
+    let mut register: i32 = 1;
+    let mut cycle: usize = 0;
+    let mut screen = [' '; 240];
+
+    for line in input.iter() {
+        let tokens = line.split(" ").collect::<Vec<_> >();
+
+        screen[cycle] = px(cycle, register);
+        cycle += 1;
+
+        if tokens[0] == "addx" {
+            screen[cycle] = px(cycle, register);
+            cycle += 1;
+
+            let addr = tokens[1].parse::<i32>().unwrap();
+            register += addr;
+        }
+    }
+
+    let output = screen.chunks(40).map(|row| row.iter().collect())
+        .collect::<Vec<String>>()
+        .join("\n");
+
+    format!("{}", output)
+
+    
+}
+
+fn px(cycle: usize, register: i32) -> char {
+    let col = cycle % 40;
+    if (col as i32).abs_diff(register) <= 1 {
+        return '█';
+    }
+
+    ' '
 }
 
 #[cfg(test)]
@@ -205,14 +239,5 @@ noop";
         let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
 
         assert_eq!(solve_one(input), "13140");
-    }
-
-    #[test]
-    fn test_solve_two() {
-        let str = "";
-    
-        let input: Vec<String> = str.split("\n").map(|x| x.to_string()).collect();
-
-        assert_eq!(solve_two(input), "");
     }
 }

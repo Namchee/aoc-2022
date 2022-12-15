@@ -5,12 +5,7 @@ type Position = (i32, i32);
 pub fn solve_one(input: Vec<String>) -> String {
     let (w, h) = (input[0].len(), input.len());
 
-    let mut source: Vec<Vec<u32> > = vec![vec![0; w]; h];
-    for (i, val) in input.iter().enumerate() {
-        for (j, c) in val.chars().enumerate() {
-            source[i][j] = c.to_digit(10).unwrap();
-        }
-    }
+    let source = parse_input(input);
 
     let mut left: Vec<Vec<u32> > = vec![vec![0; w]; h];
     let mut right: Vec<Vec<u32> > = vec![vec![0; w]; h];
@@ -45,22 +40,14 @@ pub fn solve_one(input: Vec<String>) -> String {
     format!("{}", sum)
 }
 
+// TODO: Optimize! O(w * h) is possible!
 pub fn solve_two(input: Vec<String>) -> String {
-    let (w, h) = (input[0].len(), input.len());
-
-    let mut source: Vec<Vec<u32> > = vec![vec![0; w]; h];
-
-    for (i, val) in input.iter().enumerate() {
-        for (j, c) in val.chars().enumerate() {
-            source[i][j] = c.to_digit(10).unwrap();
-        }
-    }
-
+    let grid = parse_input(input);
     let mut best: u32 = 0;
 
-    for (i, row) in source.iter().enumerate() {
+    for (i, row) in grid.iter().enumerate() {
         for (j, _) in row.iter().enumerate() {
-            let score = get_scenic_score(source.clone(), (i as i32, j as i32));
+            let score = get_scenic_score(&grid, (i as i32, j as i32));
 
             best = max(best, score);
         }
@@ -69,7 +56,7 @@ pub fn solve_two(input: Vec<String>) -> String {
     format!("{}", best)
 }
 
-fn get_scenic_score(grid: Vec<Vec<u32> >, pos: Position) -> u32 {
+fn get_scenic_score(grid: &Vec<Vec<u32> >, pos: Position) -> u32 {
     let directions: Vec<Position> = vec![
         (0, -1),
         (0, 1),
@@ -108,6 +95,18 @@ fn get_scenic_score(grid: Vec<Vec<u32> >, pos: Position) -> u32 {
 
 fn in_bound(dim: Position, pos: Position) -> bool {
     pos.0 >= 0 && pos.1 >= 0 && pos.0 < dim.0 && pos.1 < dim.1
+}
+
+fn parse_input(input: Vec<String>) -> Vec<Vec<u32> > {
+    let mut source: Vec<Vec<u32> > = vec![vec![0; input[0].len()]; input.len()];
+
+    for (i, val) in input.iter().enumerate() {
+        for (j, c) in val.chars().enumerate() {
+            source[i][j] = c.to_digit(10).unwrap();
+        }
+    }
+
+    source
 }
 
 #[cfg(test)]
