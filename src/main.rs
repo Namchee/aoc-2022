@@ -44,6 +44,7 @@ fn main() {
         10 => solve!(solutions::day10, input.as_ref().unwrap().clone()),
         11 => solve!(solutions::day11, input.as_ref().unwrap().clone()),
         12 => solve!(solutions::day12, input.as_ref().unwrap().clone()),
+        13 => solve!(solutions::day13, input.as_ref().unwrap().clone()),
         _ => println!("Not solved yet..."),
     }
 }
